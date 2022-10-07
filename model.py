@@ -45,33 +45,77 @@ class LinearCode:
 
         return np.array(H, dtype=int)
 
+    @staticmethod
+    def int_to_bin_word_array(i: int, k: int):
+        bin_str = format(i, 'b')
+        n = k - len(bin_str)
+        if n > 0:
+            bin_str = ''.zfill(n) + bin_str
+        return [int(digit_char) for digit_char in bin_str]
+
     # 1.4.2
     @staticmethod
-    def get_all_code_words(k, mtrx):
+    def get_all_code_words(k, n, mtrx):
         if k != mtrx.shape[0]:
             print("ERROR")
             exit(-1)
+        code_words1 = LinearCode.get_code_words_from_g_and_k(k, mtrx)
+        code_words2 = [np.array(row, dtype=int) for row in LinearCode.get_code_words_from_k(mtrx)]
 
-        def int_to_bin_word_array(i: int, k: int):
-            bin_str = format(i, 'b')
-            n = k - len(bin_str)
-            if n > 0:
-                bin_str = ''.zfill(n) + bin_str
-            return [int(digit_char) for digit_char in bin_str]
+        # print(code_words1)
+        # print(code_words2)
+        # print((np.array(code_words1) == np.array(code_words2)).all())
 
+        return np.unique(code_words1, axis=0)
+
+    @staticmethod
+    def get_code_words_from_k(mtrx):
+        k = mtrx.shape[0]
+        n = mtrx.shape[1]
+        words_by_sum = np.array([])
+
+        idx = []
+        for i in range(k):
+            idx.append(i)
+        sub_idx = LinearCode.sub_sets(idx)
+
+        for sub in sub_idx:
+            w = np.zeros(11)
+            if sub:
+                for i in sub:
+                    w += mtrx[i]
+            w %= 2
+            words_by_sum = np.append(words_by_sum, w)
+
+        words_by_sum = np.resize(words_by_sum, (2 ** k, n))
+        words_by_sum = words_by_sum.astype(int)
+        words_by_sum = np.unique(words_by_sum, axis=0)
+        return words_by_sum
+
+    # 1.4.2
+    @staticmethod
+    def get_code_words_from_g_and_k(k, mtrx):
         max_i = 2 ** k
-
         words = []
         for i in range(max_i):
-            words.append(int_to_bin_word_array(i, k))
+            words.append(LinearCode.int_to_bin_word_array(i, k))
         words = np.array(words, dtype=int)
-
         code_words = []
         for word in words:
             res = word @ mtrx % 2
             code_words.append(res)
+        return code_words
 
-        return np.unique(code_words, axis=0)
+    @staticmethod
+    def subsets_recur(current, x):
+        if x:
+            return LinearCode.subsets_recur(current, x[1:]) + LinearCode.subsets_recur(current + [x[0]], x[1:])
+        return [current]
+
+    # 1.4.1
+    @staticmethod
+    def sub_sets(arr):
+        return LinearCode.subsets_recur([], sorted(arr))
 
     @staticmethod
     def check_code_words(code_words, mtrx):
