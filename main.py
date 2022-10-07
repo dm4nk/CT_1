@@ -1,6 +1,6 @@
 import numpy as np
 
-from logic import rref, print_mtrx
+from logic import print_mtrx
 from model import LinearCode
 
 
@@ -29,8 +29,8 @@ def mian():
     d, t = LinearCode.distance(G, rows, cols)
     print(f"Distance: d={d}, t={t}")
 
-    e1 = np.array([0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0])  # found
-    e2 = np.array([0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0])  # not found
+    e1 = np.array([0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0])
+    e2 = np.array([0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0])  # undetected error
     v = code_words[0]
     v_p_e = (v + e2) % 2
     code_words[0] = v_p_e

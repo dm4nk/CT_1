@@ -1,6 +1,6 @@
 import numpy as np
 
-from logic import rref, ref, rref_from_echelon_matrix
+from logic import ref, rref_from_echelon_matrix
 
 
 class LinearCode:
@@ -84,7 +84,7 @@ class LinearCode:
         print("Code words are correct")
         return True
 
-    #1.4
+    # 1.4
     @staticmethod
     def distance(mtrx, rows, cols):
         for i in range(0, rows - 1):
